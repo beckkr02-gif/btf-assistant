@@ -19,6 +19,8 @@
             --blue: #60a5fa;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { touch-action: manipulation; -ms-touch-action: manipulation; }
+        input, select, textarea, button { touch-action: manipulation; font-size: 16px; }
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg);
@@ -65,11 +67,22 @@
         .opts { display: flex; flex-direction: column; gap: 8px; animation: mIn .4s ease-out; }
         .ob {
             background: transparent; color: var(--text); border: 1px solid var(--border);
-            padding: 13px 18px; cursor: pointer; text-align: left; font-size: 13px;
+            padding: 13px 18px; cursor: pointer; text-align: left; font-size: 14px;
             font-family: 'Inter', sans-serif; letter-spacing: .5px; transition: .2s;
+            touch-action: manipulation;
         }
         .ob:hover { border-color: var(--gold); background: var(--gold-dim); }
         .ob .ob-icon { margin-right: 10px; }
+
+        /* ── HEIGHT PICKER ── */
+        .ht-pick { display: flex; flex-wrap: wrap; gap: 8px; animation: mIn .4s ease-out; }
+        .ht-btn {
+            flex: 0 0 calc(25% - 6px); padding: 14px 0; background: var(--surface);
+            border: 1px solid var(--border); color: var(--text); font-size: 15px;
+            font-family: 'Inter', sans-serif; font-weight: 600; text-align: center;
+            cursor: pointer; transition: .2s; touch-action: manipulation;
+        }
+        .ht-btn:hover, .ht-btn:active { border-color: var(--gold); background: var(--gold-dim); color: var(--gold); }
 
         /* ── STAT CARDS ── */
         .stat-card {
@@ -311,6 +324,30 @@ function opts(list) {
         b.onclick = () => { w.remove(); say(o.label, 'usr'); route(o.value); };
         w.appendChild(b);
     });
+    chat.appendChild(w);
+    scroll();
+}
+
+function showHeightPicker(type) {
+    const w = document.createElement('div');
+    w.className = 'ht-pick';
+    if (type === 'feet') {
+        [4, 5, 6, 7].forEach(ft => {
+            const b = document.createElement('button');
+            b.className = 'ht-btn';
+            b.textContent = ft + "'";
+            b.onclick = () => { w.remove(); say(ft + " ft", 'usr'); route(String(ft)); };
+            w.appendChild(b);
+        });
+    } else {
+        for (let i = 0; i <= 11; i++) {
+            const b = document.createElement('button');
+            b.className = 'ht-btn';
+            b.textContent = i + '"';
+            b.onclick = () => { w.remove(); say(i + ' in', 'usr'); route(String(i)); };
+            w.appendChild(b);
+        }
+    }
     chat.appendChild(w);
     scroll();
 }
@@ -666,21 +703,29 @@ function route(input) {
     // ── TDEE FLOW ──
     } else if (step === 'tdee_sex') {
         S.d.sex = input; S.step = 'tdee_age';
+        inp.inputMode = 'numeric';
         say("How old are you?");
     } else if (step === 'tdee_age') {
         const v = parseInt(input);
         if (isNaN(v) || v < 10 || v > 120) { say("Enter a valid age."); return; }
         S.d.age = v; S.step = 'tdee_weight';
+        inp.inputMode = 'decimal';
         say("What's your current body weight in pounds?");
     } else if (step === 'tdee_weight') {
         const v = parseFloat(input);
         if (isNaN(v) || v < 50 || v > 700) { say("Enter a valid weight in lbs."); return; }
-        S.d.weight = v; S.step = 'tdee_height';
-        say("And your height? <span class='dim'>(e.g. 5'10)</span>");
-    } else if (step === 'tdee_height') {
-        const v = parseHt(input);
-        if (isNaN(v) || v < 36 || v > 96) { say("Enter a valid height. Example: 5'10"); return; }
-        S.d.height = v;
+        S.d.weight = v; S.step = 'tdee_feet';
+        say("What's your height? Select your feet:");
+        showHeightPicker('feet');
+    } else if (step === 'tdee_feet') {
+        S.d._feet = parseInt(input);
+        say(`${S.d._feet} feet — and how many inches?`);
+        showHeightPicker('inches');
+        S.step = 'tdee_inches';
+    } else if (step === 'tdee_inches') {
+        const inches = parseInt(input);
+        S.d.height = (S.d._feet * 12) + inches;
+        say(`Got it — ${S.d._feet}'${inches}"`, 'usr');
 
         // Calculate BMR
         S.d.bmr = calcBMR();
@@ -764,10 +809,11 @@ function route(input) {
     // ── FALLBACK ──
     } else {
         const hints = {
-            'tdee_sex': "I need your biological sex to continue. Choose Male or Female above.",
+            'tdee_sex': "Choose Male or Female above.",
             'tdee_age': "I'm waiting for your age (just a number, like 28).",
             'tdee_weight': "I need your weight in pounds (e.g. 175).",
-            'tdee_height': "I need your height (e.g. 5'10).",
+            'tdee_feet': "Tap your height in feet above.",
+            'tdee_inches': "Tap your inches above.",
             'tdee_activity': "Select your activity level from the options above.",
             'tdee_email': "Enter your email address to unlock your macro breakdown.",
             'tdee_goal': "Pick your goal from the options above — Cut, Bulk, or Maintain.",
