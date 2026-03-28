@@ -752,12 +752,16 @@ function route(input) {
         setTimeout(() => {
             say(`<span class="gold">${S.d.name}</span>, your numbers are in. Want to see a full macro breakdown for your goal — completely <span class="gold">free</span>?`);
             say("Enter your email to unlock your personalized BTF Macro Card.");
+            inp.inputMode = 'email';
+            inp.type = 'email';
             S.step = 'tdee_email';
         }, 700);
 
     } else if (step === 'tdee_email') {
         if (!input.includes('@') || !input.includes('.')) { say("Please enter a valid email."); return; }
         S.d.email = input;
+        inp.inputMode = 'text';
+        inp.type = 'text';
         say("Now pick your primary goal:");
         opts([
             { icon: '🔥', label: 'Fat Loss (Cutting)', value: 'cut' },
@@ -799,11 +803,15 @@ function route(input) {
         S.d.oneRM = calc1RM(S.d.liftWeight, v);
 
         say("Your strength profile is ready. Enter your email to unlock the full breakdown with training percentages.");
+        inp.inputMode = 'email';
+        inp.type = 'email';
         S.step = '1rm_email';
 
     } else if (step === '1rm_email') {
         if (!input.includes('@') || !input.includes('.')) { say("Please enter a valid email."); return; }
         S.d.email = input;
+        inp.inputMode = 'text';
+        inp.type = 'text';
         show1RMCard();
 
     // ── FALLBACK ──
@@ -1024,6 +1032,26 @@ function submit() {
 }
 inp.addEventListener('keypress', e => { if (e.key === 'Enter') submit(); });
 sbtn.onclick = submit;
+
+// ─── iOS Keyboard Fix ───
+// When the iOS keyboard opens, scroll the chat to bottom so the user can see messages
+inp.addEventListener('focus', () => {
+    setTimeout(() => {
+        scroll();
+        // On iOS in iframe, scroll the input into view
+        inp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+});
+
+// Use visualViewport API to handle keyboard resize
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        // Adjust app height to visible viewport (excluding keyboard)
+        const vh = window.visualViewport.height;
+        document.getElementById('app').style.height = vh + 'px';
+        scroll();
+    });
+}
 
 // ─── Init ───
 window.onload = () => {
