@@ -152,24 +152,32 @@ const calcMacros = (t,g) => {
 // ─── Canvas Engine ───
 function drawCard(canvasId, type, goal='cut', locked=false) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    if (!canvas) { console.error('Canvas not found:', canvasId); return; }
     const ctx = canvas.getContext('2d'), W=600, H=840;
     canvas.width=W; canvas.height=H;
     
-    // Initial reveal
+    // Ensure fonts are ready or fallback
+    const titleFont = document.fonts.check('28px Cinzel') ? '700 28px Cinzel' : '700 28px serif';
+    const mainFont = 'Inter, sans-serif';
+
+    // Show the canvas immediately
     canvas.style.opacity = '1';
 
-    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
-    
-    ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font='700 28px Cinzel'; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
-    ctx.font='700 12px Inter'; ctx.fillStyle='#444'; ctx.fillText('PERSONALIZED PERFORMANCE PROFILE', W/2, 115);
-    
-    ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(50,140); ctx.lineTo(W-50,140); ctx.stroke();
-    
-    ctx.textAlign='left'; ctx.fillStyle='#888'; ctx.font='600 15px Inter';
-    ctx.fillText(`CLIENT: ${(S.d.name||'USER').toUpperCase()}`, 60, 185);
-    ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 215);
+    try {
+        ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+        ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
+        
+        ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font=titleFont; 
+        ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
+        ctx.font='700 12px ' + mainFont; ctx.fillStyle='#444'; 
+        ctx.fillText('PERSONALIZED PERFORMANCE PROFILE', W/2, 115);
+        
+        ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(50,140); ctx.lineTo(W-50,140); ctx.stroke();
+        
+        ctx.textAlign='left'; ctx.fillStyle='#888'; ctx.font='600 15px ' + mainFont;
+        ctx.fillText(`CLIENT: ${(S.d.name||'USER').toUpperCase()}`, 60, 185);
+        ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 215);
+
 
     if (type === 'bmr') {
         ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 11px Inter'; ctx.fillText('BASAL METABOLIC RATE (BMR)', W/2, 330);
@@ -201,7 +209,11 @@ function drawCard(canvasId, type, goal='cut', locked=false) {
             }
         }
     }
-    ctx.textAlign='center'; ctx.fillStyle='#333'; ctx.font='400 12px Inter'; ctx.fillText('BETTERTOMORROWFITNESS.COM  ·  CONSISTENCY > PERFECTION', W/2, H-40);
+    } catch (e) {
+        console.error('BTF Card Render Error:', e);
+        // Fallback text if canvas fails
+        ctx.fillStyle='#fff'; ctx.font='14px sans-serif'; ctx.fillText('Error loading card. Please refresh.', W/2, H/2);
+    }
 }
 
 // ─── Flow ───
@@ -233,8 +245,8 @@ function route(val) {
         S.d.bmr = calcBMR();
         say("Step 1 Complete. Here is your <span class=\"gold\">Basal Metabolic Rate</span> — what your body burns at rest.");
         const cId = 'bmr-'+Date.now();
-        addEl(`<div class="rz-wrap"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
-        requestAnimationFrame(()=>drawCard(cId, 'bmr'));
+        addEl(`<div class="rz-wrap" style="min-height:220px;"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
+        setTimeout(()=>drawCard(cId, 'bmr'), 300);
         setTimeout(()=>{
             say("Now let's factor in your activity level to get your <span class=\"gold\">TDEE</span>.");
             opts([{label:'Sedentary',value:'1.2'},{label:'Light (1-3 days)',value:'1.375'},{label:'Moderate (3-5 days)',value:'1.55'},{label:'Very Active (6+ days)',value:'1.725'}]);
@@ -244,8 +256,8 @@ function route(val) {
         S.d.activity = parseFloat(val); S.d.tdee = Math.round(S.d.bmr * S.d.activity);
         say("Maintenance calories calculated.");
         const cId = 'tdee-'+Date.now();
-        addEl(`<div class="rz-wrap"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
-        requestAnimationFrame(()=>drawCard(cId, 'tdee'));
+        addEl(`<div class="rz-wrap" style="min-height:220px;"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
+        setTimeout(()=>drawCard(cId, 'tdee'), 300);
         setTimeout(()=>{
             say(`<span class="gold">${S.d.name}</span>, want to see your full macro breakdown for your goal — completely <span class="gold">free</span>?`);
             say("Enter email to unlock your personalized BTF Macro Card.");
@@ -259,8 +271,8 @@ function route(val) {
     } else if (s === 'goal') {
         S.d.goal = val;
         const cId = 'macro-'+Date.now();
-        addEl(`<div class="rz-wrap"><div class="rz"><canvas id="${cId}"></canvas></div><button class="save-btn" onclick="saveCanvasAsImg('${cId}')">Download Result Card</button></div>`);
-        requestAnimationFrame(()=>drawCard(cId, 'macros', val));
+        addEl(`<div class="rz-wrap" style="min-height:400px;"><div class="rz"><canvas id="${cId}"></canvas></div><button class="save-btn" onclick="saveCanvasAsImg('${cId}')">Download Result Card</button></div>`);
+        setTimeout(()=>drawCard(cId, 'macros', val), 300);
         say("Unlocked! You can now download your card below.");
         fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({timestamp:new Date().toISOString(),...S.d})});
         setTimeout(()=>{
