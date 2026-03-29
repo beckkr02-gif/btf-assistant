@@ -72,16 +72,15 @@
         .rz-wrap { width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 2.5px solid var(--gold); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
         .rz { position: relative; width: 100%; min-height: 200px; }
         .rz canvas { width: 100%; display: block; opacity: 0; transition: opacity 0.5s ease; }
-        .rz.locked canvas { filter: blur(22px) brightness(0.4); }
         .save-btn { background: var(--gold); color: #000; border: none; padding: 14px; width: 100%; font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; cursor: pointer; }
 
-        .stat-card { background: #fcfcfc; border: 1.5px solid #eee; border-radius: 12px; padding: 22px; text-align: center; margin: 8px 0; border-left: 5px solid var(--gold); width: 100%; }
+        .stat-card { background: #fcfcfc; border: 1.5px solid #eee; border-radius: 12px; padding: 22px; text-align: center; margin: 8px 0; border-left: 5px solid var(--gold); width: 100%; animation: mIn .5s; }
         .stat-card .val { font-size: 38px; font-weight: 800; color: #000; line-height: 1; margin: 5px 0; }
         .stat-card .lbl { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.5px; }
         .stat-card .sub { font-size: 12px; color: var(--dim); margin-top: 4px; }
 
         /* ── MEAL PLAN ── */
-        .meal-p { background: #111; color: #fff; padding: 24px 18px; border-radius: 12px; border: 2px solid var(--gold); width: 100%; }
+        .meal-p { background: #111; color: #fff; padding: 24px 18px; border-radius: 12px; border: 2px solid var(--gold); width: 100%; animation: mIn .6s; }
         .meal-h { font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold); text-align: center; border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 16px; }
         .meal-it { margin-bottom: 18px; }
         .meal-l { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
@@ -135,42 +134,41 @@ function showHeightPicker(type) {
     vals.forEach(v=>{ const b=document.createElement('button'); b.className='ob'; b.style.padding='10px 0'; b.textContent=v+(type==='feet'?"'":'"'); b.onclick=()=>{ w.remove(); say(v+(type==='feet'?" ft":" in"),'usr'); route(String(v)); }; w.appendChild(b); });
 }
 
-// ─── Logic ───
+// ─── Restore Math from Backup ───
 const calcBMR = () => {
-    let b = (10*(S.d.weight*0.453592))+(6.25*(S.d.height*2.54))-(5*S.d.age);
-    return Math.round(S.d.sex==='male' ? b+5 : b-161);
+    const wKg = S.d.weight * 0.453592, hCm = S.d.height * 2.54;
+    let bmr = (10 * wKg) + (6.25 * hCm) - (5 * S.d.age);
+    return Math.round(S.d.sex === 'male' ? bmr + 5 : bmr - 161);
 };
-const calcMacros = (t,g) => {
-    let c, pM, fM;
-    if(g==='cut'){ c=t-500; pM=1.2; fM=0.25; }
-    else if(g==='bulk'){ c=t+300; pM=1.0; fM=0.35; }
-    else { c=t; pM=1.0; fM=0.3; }
+const calcMacros = (tdee, goal) => {
+    let cal, pM, fM;
+    if (goal === 'cut') { cal = tdee - 500; pM = 1.2; fM = 0.25; }
+    else if (goal === 'bulk') { cal = tdee + 300; pM = 1.0; fM = 0.4; }
+    else { cal = tdee; pM = 1.0; fM = 0.35; }
     const p = Math.round(S.d.weight * pM), f = Math.round(S.d.weight * fM);
-    return { cal:c, p, f, c: Math.max(0, Math.round((c-(p*4)-(f*9))/4)) };
+    const c = Math.max(0, Math.round((cal - (p * 4) - (f * 9)) / 4));
+    return { cal, p, f, c };
 };
 
-// ─── Canvas Engine ───
-function drawCard(canvasId, type, goal='cut', locked=false) {
+// ─── Restore Canvas Logic from Backup ───
+function drawTDEECard(canvasId, goal, isLocked=false) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) { console.error('Canvas not found:', canvasId); return; }
+    if (!canvas) return;
     const ctx = canvas.getContext('2d'), W=600, H=840;
     canvas.width=W; canvas.height=H;
     
-    // Ensure fonts are ready or fallback
+    // Fallback fonts
     const titleFont = document.fonts.check('28px Cinzel') ? '700 28px Cinzel' : '700 28px serif';
     const mainFont = 'Inter, sans-serif';
 
-    // Show the canvas immediately
     canvas.style.opacity = '1';
 
     try {
         ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
         ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
         
-        ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font=titleFont; 
-        ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
-        ctx.font='700 12px ' + mainFont; ctx.fillStyle='#444'; 
-        ctx.fillText('PERSONALIZED PERFORMANCE PROFILE', W/2, 115);
+        ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font=titleFont; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
+        ctx.font='700 12px ' + mainFont; ctx.fillStyle='#444'; ctx.fillText('PERSONALIZED PERFORMANCE PROFILE', W/2, 115);
         
         ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(50,140); ctx.lineTo(W-50,140); ctx.stroke();
         
@@ -178,48 +176,63 @@ function drawCard(canvasId, type, goal='cut', locked=false) {
         ctx.fillText(`CLIENT: ${(S.d.name||'USER').toUpperCase()}`, 60, 185);
         ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 215);
 
-
-    if (type === 'bmr') {
-        ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 11px Inter'; ctx.fillText('BASAL METABOLIC RATE (BMR)', W/2, 330);
-        ctx.fillStyle='#fff'; ctx.font='800 100px Inter'; ctx.fillText(S.d.bmr.toLocaleString(), W/2, 450);
-        ctx.fillStyle=GOLD; ctx.font='600 16px Inter'; ctx.fillText('CALORIES / DAY AT REST', W/2, 485);
-        ctx.fillStyle='#333'; ctx.font='400 12px Inter'; ctx.fillText('This is what your body burns just to stay alive.', W/2, 540);
-    } else if (type === 'tdee' || type === 'macros') {
-        ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 11px Inter'; ctx.fillText('TOTAL DAILY ENERGY EXPENDITURE (TDEE)', W/2, 300);
-        ctx.fillStyle='#fff'; ctx.font='800 100px Inter'; ctx.fillText(S.d.tdee.toLocaleString(), W/2, 420);
-        ctx.fillStyle=GOLD; ctx.font='600 16px Inter'; ctx.fillText('MAINTENANCE CALORIES / DAY', W/2, 455);
+        // BMR Section
+        ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 12px ' + mainFont; ctx.fillText('BASAL METABOLIC RATE (BMR)', W/2, 300);
+        ctx.fillStyle='#fff'; ctx.font='800 100px ' + mainFont; ctx.fillText((S.d.bmr||0).toLocaleString(), W/2, 420);
+        ctx.fillStyle=GOLD; ctx.font='600 16px ' + mainFont; ctx.fillText('CALORIES / DAY AT REST', W/2, 455);
         
-        if (type === 'macros') {
-            if (locked) {
-                ctx.fillStyle='rgba(0,0,0,0.88)'; ctx.fillRect(50, 500, W-100, 280);
-                ctx.fillStyle=GOLD; ctx.font='700 24px Cinzel'; ctx.fillText('MACROS LOCKED', W/2, 620);
-                ctx.fillStyle='#fff'; ctx.font='400 15px Inter'; ctx.fillText('Enter email to unlock your breakdown', W/2, 650);
+        if (goal) {
+            ctx.clearRect(0,0,W,H);
+            ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+            ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
+            ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font=titleFont; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
+            ctx.font='700 12px ' + mainFont; ctx.fillStyle='#444'; ctx.fillText('CALORIE & MACRO PROFILE', W/2, 115);
+            ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(50,140); ctx.lineTo(W-50,140); ctx.stroke();
+            ctx.textAlign='left'; ctx.fillStyle='#888'; ctx.font='600 15px ' + mainFont;
+            ctx.fillText(`CLIENT: ${(S.d.name||'USER').toUpperCase()}`, 60, 185);
+            ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 215);
+
+            ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 11px ' + mainFont; ctx.fillText('TOTAL DAILY ENERGY EXPENDITURE (TDEE)', W/2, 300);
+            ctx.fillStyle='#fff'; ctx.font='800 100px ' + mainFont; ctx.fillText((S.d.tdee||0).toLocaleString(), W/2, 420);
+            ctx.fillStyle=GOLD; ctx.font='600 16px ' + mainFont; ctx.fillText('MAINTENANCE CALORIES / DAY', W/2, 455);
+
+            if (isLocked) {
+                ctx.fillStyle='rgba(0,0,0,0.85)'; ctx.fillRect(50, 480, W-100, 310);
+                ctx.fillStyle=GOLD; ctx.font='700 24px ' + titleFont; ctx.fillText('MACROS LOCKED', W/2, 600);
+                ctx.fillStyle='#fff'; ctx.font='400 15px ' + mainFont; ctx.fillText('Enter email to unlock your breakdown', W/2, 630);
             } else {
                 const m = calcMacros(S.d.tdee, goal);
-                const gN = { cut:'FAT LOSS (CUTTING)', bulk:'LEAN BULK', maintenance:'MAINTENANCE' };
-                ctx.fillStyle=GOLD; ctx.font='800 24px Inter'; ctx.fillText(gN[goal], W/2, 560);
-                ctx.fillStyle='#fff'; ctx.font='800 64px Inter'; ctx.fillText(`${m.cal.toLocaleString()} KCAL`, W/2, 640);
-                const b = [{l:'PROTEIN', v:m.p+'g', c:'#4ade80'},{l:'FAT', v:m.f+'g', c:'#f87171'},{l:'CARBS', v:m.c+'g', c:'#60a5fa'}];
-                b.forEach((x, i) => {
+                const gL = { cut:'FAT LOSS (CUTTING)', bulk:'LEAN BULK', maintenance:'MAINTENANCE' };
+                const gC = { cut:'-500 KCAL DEFICIT', bulk:'+300 KCAL SURPLUS', maintenance:'BASELINE' };
+                ctx.fillStyle=GOLD; ctx.font='800 22px ' + mainFont; ctx.fillText(`GOAL: ${gL[goal]}`, W/2, 540);
+                ctx.fillStyle='#555'; ctx.font='400 14px ' + mainFont; ctx.fillText(gC[goal], W/2, 565);
+                ctx.fillStyle='#fff'; ctx.font='800 70px ' + mainFont; ctx.fillText(`${m.cal.toLocaleString()} KCAL`, W/2, 640);
+                ctx.fillStyle=GOLD; ctx.font='600 14px ' + mainFont; ctx.fillText('DAILY TARGET', W/2, 665);
+
+                const macros = [
+                    { label:'PROTEIN', v: m.p + 'g', c:'#4ade80', p: Math.round((m.p*4/m.cal)*100)+'%' },
+                    { label:'FAT', v: m.f + 'g', c:'#f87171', p: Math.round((m.f*9/m.cal)*100)+'%' },
+                    { label:'CARBS', v: m.c + 'g', c:'#60a5fa', p: Math.round((m.c*4/m.cal)*100)+'%' },
+                ];
+                macros.forEach((x, i) => {
                     const xp = 80 + i*160; ctx.fillStyle='#111'; ctx.fillRect(xp, 700, 120, 100);
-                    ctx.fillStyle=x.c; ctx.fillRect(xp, 700, 120, 5);
-                    ctx.fillStyle='#666'; ctx.font='700 12px Inter'; ctx.fillText(x.l, xp+60, 735);
-                    ctx.fillStyle='#fff'; ctx.font='800 32px Inter'; ctx.fillText(x.v, xp+60, 780);
+                    ctx.fillStyle=x.c; ctx.fillRect(xp, 700, 120, 4);
+                    ctx.textAlign='center'; ctx.fillStyle='#666'; ctx.font='700 11px ' + mainFont; ctx.fillText(x.label, xp+60, 730);
+                    ctx.fillStyle='#fff'; ctx.font='800 28px ' + mainFont; ctx.fillText(x.v, xp+60, 765);
+                    ctx.fillStyle='#444'; ctx.font='400 10px ' + mainFont; ctx.fillText(x.p, xp+60, 785);
                 });
             }
         }
-    }
+        ctx.textAlign='center'; ctx.fillStyle='#333'; ctx.font='400 11px ' + mainFont; ctx.fillText('BETTERTOMORROWFITNESS.COM  ·  CONSISTENCY > PERFECTION', W/2, H-40);
     } catch (e) {
-        console.error('BTF Card Render Error:', e);
-        // Fallback text if canvas fails
-        ctx.fillStyle='#fff'; ctx.font='14px sans-serif'; ctx.fillText('Error loading card. Please refresh.', W/2, H/2);
+        console.error('BTF Render Error:', e);
     }
 }
 
 // ─── Flow ───
 const showMenu = () => {
     S.step = 'menu';
-    say(`How can I help you today${S.d.name ? ', ' + S.d.name : ''}?`);
+    say(`Hey! I'm the BTF Assistant. How can we build a better you today?`);
     opts([{label:'BTF Calorie Calculator', value:'tdee'},{label:'1-Rep Max Estimator', value:'1rm'},{label:'Sample Meal Plan', value:'meal'},{label:'Progress Projector', value:'prog'},{label:'Coaching Application', value:'coach'}]);
 };
 
@@ -246,7 +259,7 @@ function route(val) {
         say("Step 1 Complete. Here is your <span class=\"gold\">Basal Metabolic Rate</span> — what your body burns at rest.");
         const cId = 'bmr-'+Date.now();
         addEl(`<div class="rz-wrap" style="min-height:220px;"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
-        setTimeout(()=>drawCard(cId, 'bmr'), 300);
+        setTimeout(()=>drawTDEECard(cId), 300);
         setTimeout(()=>{
             say("Now let's factor in your activity level to get your <span class=\"gold\">TDEE</span>.");
             opts([{label:'Sedentary',value:'1.2'},{label:'Light (1-3 days)',value:'1.375'},{label:'Moderate (3-5 days)',value:'1.55'},{label:'Very Active (6+ days)',value:'1.725'}]);
@@ -257,22 +270,22 @@ function route(val) {
         say("Maintenance calories calculated.");
         const cId = 'tdee-'+Date.now();
         addEl(`<div class="rz-wrap" style="min-height:220px;"><div class="rz"><canvas id="${cId}"></canvas></div></div>`);
-        setTimeout(()=>drawCard(cId, 'tdee'), 300);
+        setTimeout(()=>drawTDEECard(cId, 'maintenance'), 300);
         setTimeout(()=>{
-            say(`<span class="gold">${S.d.name}</span>, want to see your full macro breakdown for your goal — completely <span class="gold">free</span>?`);
+            say(`<span class="gold">${S.d.name}</span>, your numbers are in. Want to see a full macro breakdown for your goal — completely <span class="gold">free</span>?`);
             say("Enter email to unlock your personalized BTF Macro Card.");
             inp.inputMode='email'; inp.type='email'; S.step='email';
         }, 1200);
     } else if (s === 'email') {
         if(!val.includes('@')){ say("Enter a valid email."); return; }
         S.d.email = val; S.step='goal'; inp.inputMode='text'; inp.type='text';
-        say("Pick your goal to unlock the breakdown:");
+        say("Now pick your primary goal:");
         opts([{label:'Fat Loss',value:'cut'},{label:'Muscle Gain',value:'bulk'},{label:'Maintenance',value:'maintenance'}]);
     } else if (s === 'goal') {
         S.d.goal = val;
         const cId = 'macro-'+Date.now();
         addEl(`<div class="rz-wrap" style="min-height:400px;"><div class="rz"><canvas id="${cId}"></canvas></div><button class="save-btn" onclick="saveCanvasAsImg('${cId}')">Download Result Card</button></div>`);
-        setTimeout(()=>drawCard(cId, 'macros', val), 300);
+        setTimeout(()=>drawTDEECard(cId, val, false), 300);
         say("Unlocked! You can now download your card below.");
         fetch(WEBHOOK_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({timestamp:new Date().toISOString(),...S.d})});
         setTimeout(()=>{
@@ -282,17 +295,6 @@ function route(val) {
         }, 2000);
     } else if (s === 'post') {
         if(val==='meal_yes') showMeal(); else showMenu();
-    } else if (s === '1rm_ex') { S.d.exercise=val; S.step='1rm_w'; inp.inputMode='decimal'; say("Weight (lbs)?"); }
-    else if (s === '1rm_w') { S.d.lw=parseFloat(val); S.step='1rm_r'; inp.inputMode='numeric'; say("Reps?"); }
-    else if (s === '1rm_r') {
-        S.d.lr=parseInt(val); S.d.oneRM = Math.round(S.d.lw * (1 + S.d.lr/30));
-        say("1RM calculated. Enter email to reveal the full training table:");
-        inp.inputMode='email'; S.step='1rm_email';
-    } else if (s === '1rm_email') {
-        S.d.email=val; S.step='menu'; say("Unlocked! (Simplified for demo)"); showMenu();
-    } else if (s === 'coach') {
-        if(val==='y') addEl('<a href="https://forms.gle/CBc71KbhJGwZ8TZa9" target="_blank" class="ob" style="display:block;text-decoration:none;margin-top:10px;background:var(--gold)">APPLY NOW →</a>');
-        else showMenu();
     }
 }
 
@@ -335,7 +337,7 @@ inp.onkeypress = e => { if(e.key==='Enter') sbtn.onclick(); };
 document.getElementById('hdr-close').onclick = () => parent.postMessage('close_btf','*');
 
 if(window.visualViewport) window.visualViewport.onresize = () => { document.body.style.height = window.visualViewport.height + 'px'; scroll(); };
-window.onload = () => { say("Hey! I'm the BTF Assistant. How can we build a better you today?"); setTimeout(()=>route('init'), 500); };
+window.onload = () => { route('init'); };
 </script>
 </body>
 </html>
