@@ -301,8 +301,7 @@ function saveLead(data) {
 }
 
 // ─── State ───
-// ─── State ───
-let S = { step: 'welcome', d: {} };
+let S = { step: 'ask_name', d: {} };
 
 // ─── UI Helpers ───
 function scroll() { setTimeout(() => chat.scrollTop = chat.scrollHeight, 60); }
@@ -595,7 +594,7 @@ function draw1RM(canvas) {
 // ─── Main Menu ───
 function showMenu() {
     S.step = 'menu';
-    say(`How can I help you today${S.d.name ? ', ' + S.d.name : ''}?`);
+    say(`What would you like to do today, <span class="gold">${S.d.name}</span>?`);
     opts([
         { icon: '📊', label: 'BTF Calorie Calculator', value: 'tdee_start' },
         { icon: '🏋️', label: 'BTF 1-Rep Max Estimator', value: '1rm_start' },
@@ -651,37 +650,55 @@ function route(input) {
     // ── NAME ──
     if (step === 'ask_name') {
         S.d.name = input;
-        say(`Good to meet you, <span class="gold">${S.d.name}</span>. Let's get started.`);
-        startSelectedTool(S.d._pendingTool);
-        return;
-    }
+        say(`Good to meet you, <span class="gold">${S.d.name}</span>. I'm the BTF Assistant — here to help you train smarter and build a better tomorrow.`);
+        setTimeout(() => showMenu(), 600);
 
     // ── MENU ──
-    if (step === 'menu' || step === 'post_result' || step === 'meal_done') {
-        if (input === 'meal_again') { showMealPlan(); return; }
-        
-        if (S.d.name || input === 'coaching' || input === 'program') {
-            startSelectedTool(input);
-        } else {
-            S.d._pendingTool = input;
-            S.step = 'ask_name';
-            say("I can definitely help with that. First, what is your name?");
-        }
-        return;
-    }
-}
-
-function startSelectedTool(input) {
-    if (input === 'tdee_start') {
-        S.step = 'tdee_sex';
-        say("Let's build your calorie profile. What is your biological sex?");
-        opts([ { label: 'Male', value: 'male' }, { label: 'Female', value: 'female' } ]);
-    } else if (input === '1rm_start') {
-        S.step = '1rm_exercise';
-        say("Let's estimate your max strength. What exercise are we testing? (e.g. Bench Press, Squat, Deadlift)");
-    } else if (input === 'meal_start') {
-        if (S.d.tdee && S.d.goal) {
+    } else if (step === 'menu' || step === 'post_result' || step === 'meal_done') {
+        if (input === 'meal_again') {
             showMealPlan();
+            return;
+        }
+        if (input === 'tdee_start') {
+            S.step = 'tdee_sex';
+            say("Let's build your calorie profile. What is your biological sex?");
+            opts([ { label: 'Male', value: 'male' }, { label: 'Female', value: 'female' } ]);
+        } else if (input === '1rm_start') {
+            S.step = '1rm_exercise';
+            say("Let's estimate your max strength. What exercise are we testing? (e.g. Bench Press, Squat, Deadlift)");
+        } else if (input === 'meal_start') {
+            if (S.d.tdee && S.d.goal) {
+                showMealPlan();
+            } else {
+                say("To generate a meal plan, I need your calorie and macro targets first. Let's calculate those.");
+                S.step = 'tdee_sex';
+                setTimeout(() => {
+                    say("What is your biological sex?");
+                    opts([ { label: 'Male', value: 'male' }, { label: 'Female', value: 'female' } ]);
+                }, 400);
+                S.d._afterTdee = 'meal';
+            }
+        } else if (input === 'progress_start') {
+            if (S.d.tdee && S.d.goal) {
+                showProgressProjector();
+            } else {
+                say("To project your progress, I need your stats first. Let's run the numbers.");
+                S.step = 'tdee_sex';
+                setTimeout(() => {
+                    say("What is your biological sex?");
+                    opts([ { label: 'Male', value: 'male' }, { label: 'Female', value: 'female' } ]);
+                }, 400);
+                S.d._afterTdee = 'progress';
+            }
+        } else if (input === 'coaching') {
+            showCoaching();
+        } else if (input === 'program') {
+            say("The BTF 4-Week Custom Program is built to match your goals, your schedule, and your body. Every set has a purpose.");
+            addEl(`<a href="${URLS.program}" target="_blank" class="cta">VIEW 4-WEEK PROGRAM →</a>`);
+            setTimeout(() => showMenu(), 1000);
+        } else if (input === 'back_menu') {
+            showMenu();
+        }
 
     // ── TDEE FLOW ──
     } else if (step === 'tdee_sex') {
