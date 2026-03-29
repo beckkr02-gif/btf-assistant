@@ -301,7 +301,7 @@ function saveLead(data) {
 }
 
 // ─── State ───
-let S = { step: 'ask_name', d: {} };
+let S = { step: 'menu', d: {} };
 
 // ─── UI Helpers ───
 function scroll() { setTimeout(() => chat.scrollTop = chat.scrollHeight, 60); }
@@ -390,61 +390,159 @@ function calc1RM(w, r) { return Math.round(w * (1 + r / 30)); }
 // ─── Meal Plan Database ───
 const MEALS = {
     proteins: [
-        { name: 'Grilled Chicken Breast (6oz)', p: 42, f: 3, c: 0, cal: 195 },
-        { name: 'Lean Ground Turkey (6oz)', p: 38, f: 8, c: 0, cal: 224 },
-        { name: 'Salmon Fillet (5oz)', p: 34, f: 12, c: 0, cal: 248 },
-        { name: 'Egg Whites (6) + Whole Egg (1)', p: 28, f: 5, c: 1, cal: 161 },
-        { name: 'Greek Yogurt (1 cup, nonfat)', p: 20, f: 0, c: 9, cal: 120 },
-        { name: 'Lean Sirloin Steak (5oz)', p: 36, f: 8, c: 0, cal: 216 },
+        { name: 'Grilled Chicken Breast (6oz)',       p: 42, f: 3,  c: 0,  cal: 195, tags: ['lean'] },
+        { name: 'Lean Ground Turkey (6oz)',             p: 38, f: 8,  c: 0,  cal: 224, tags: ['lean'] },
+        { name: 'Salmon Fillet (5oz)',                  p: 34, f: 12, c: 0,  cal: 248, tags: [] },
+        { name: 'Egg Whites (6) + Whole Egg (1)',       p: 28, f: 5,  c: 1,  cal: 161, tags: ['lean', 'morning'] },
+        { name: 'Greek Yogurt (1 cup, nonfat)',         p: 20, f: 0,  c: 9,  cal: 120, tags: ['lean', 'morning'] },
+        { name: 'Lean Sirloin Steak (5oz)',             p: 36, f: 8,  c: 0,  cal: 216, tags: [] },
+        { name: 'Canned Tuna (5oz)',                    p: 35, f: 2,  c: 0,  cal: 156, tags: ['lean'] },
+        { name: 'Tilapia Fillet (6oz)',                 p: 34, f: 3,  c: 0,  cal: 163, tags: ['lean'] },
+        { name: 'Shrimp (6oz)',                         p: 28, f: 2,  c: 0,  cal: 128, tags: ['lean'] },
+        { name: 'Cod Fillet (6oz)',                     p: 32, f: 2,  c: 0,  cal: 146, tags: ['lean'] },
+        { name: 'Cottage Cheese (1 cup, low-fat)',      p: 28, f: 3,  c: 6,  cal: 163, tags: ['lean', 'morning'] },
+        { name: '93% Lean Ground Beef (5oz)',           p: 32, f: 10, c: 0,  cal: 218, tags: [] },
+        { name: 'Pork Tenderloin (5oz)',                p: 30, f: 4,  c: 0,  cal: 156, tags: ['lean'] },
+        { name: 'Deli Turkey Breast (4oz)',             p: 22, f: 1,  c: 2,  cal: 105, tags: ['lean'] },
+        { name: 'Tofu, Firm (6oz)',                     p: 14, f: 6,  c: 2,  cal: 118, tags: ['lean'] },
+        { name: 'Tempeh (4oz)',                         p: 20, f: 9,  c: 7,  cal: 193, tags: [] },
+        { name: 'Whey Protein Shake (1 scoop)',         p: 25, f: 2,  c: 3,  cal: 130, tags: ['lean', 'morning'] },
+        { name: 'Bison (5oz)',                          p: 34, f: 7,  c: 0,  cal: 199, tags: [] },
     ],
     carbs: [
-        { name: 'White Rice (1 cup cooked)', p: 4, f: 0, c: 45, cal: 200 },
-        { name: 'Sweet Potato (1 medium)', p: 2, f: 0, c: 26, cal: 112 },
-        { name: 'Oats (1/2 cup dry)', p: 5, f: 3, c: 27, cal: 150 },
-        { name: 'Whole Wheat Bread (2 slices)', p: 6, f: 2, c: 24, cal: 140 },
-        { name: 'Brown Rice (1 cup cooked)', p: 5, f: 2, c: 45, cal: 216 },
-        { name: 'Banana (1 large)', p: 1, f: 0, c: 31, cal: 121 },
+        { name: 'White Rice (1 cup cooked)',            p: 4,  f: 0,  c: 45, cal: 200, tags: [] },
+        { name: 'Sweet Potato (1 medium)',              p: 2,  f: 0,  c: 26, cal: 112, tags: [] },
+        { name: 'Oats (1/2 cup dry)',                   p: 5,  f: 3,  c: 27, cal: 150, tags: ['morning'] },
+        { name: 'Whole Wheat Bread (2 slices)',         p: 6,  f: 2,  c: 24, cal: 140, tags: [] },
+        { name: 'Brown Rice (1 cup cooked)',            p: 5,  f: 2,  c: 45, cal: 216, tags: [] },
+        { name: 'Banana (1 large)',                     p: 1,  f: 0,  c: 31, cal: 121, tags: ['morning'] },
+        { name: 'Quinoa (3/4 cup cooked)',              p: 6,  f: 2,  c: 30, cal: 166, tags: [] },
+        { name: 'Lentils (1/2 cup cooked)',             p: 9,  f: 0,  c: 20, cal: 116, tags: [] },
+        { name: 'Black Beans (1/2 cup)',                p: 8,  f: 0,  c: 20, cal: 114, tags: [] },
+        { name: 'Chickpeas (1/2 cup)',                  p: 7,  f: 2,  c: 22, cal: 134, tags: [] },
+        { name: 'Whole Wheat Pasta (1 cup cooked)',     p: 7,  f: 1,  c: 37, cal: 174, tags: ['caloric'] },
+        { name: 'Corn Tortillas (2 small)',             p: 3,  f: 2,  c: 28, cal: 140, tags: [] },
+        { name: 'Apple (1 medium)',                     p: 0,  f: 0,  c: 25, cal: 95,  tags: ['morning'] },
+        { name: 'Mixed Berries (1 cup)',                p: 1,  f: 0,  c: 21, cal: 85,  tags: ['morning'] },
+        { name: 'Butternut Squash (1 cup roasted)',     p: 2,  f: 0,  c: 22, cal: 82,  tags: [] },
+        { name: 'Farro (1/2 cup dry)',                  p: 7,  f: 1,  c: 35, cal: 170, tags: [] },
     ],
     fats: [
-        { name: 'Avocado (1/2 medium)', p: 1, f: 11, c: 6, cal: 120 },
-        { name: 'Almonds (1oz)', p: 6, f: 14, c: 6, cal: 164 },
-        { name: 'Olive Oil (1 tbsp)', p: 0, f: 14, c: 0, cal: 120 },
-        { name: 'Peanut Butter (2 tbsp)', p: 7, f: 16, c: 6, cal: 190 },
+        { name: 'Avocado (1/2 medium)',                 p: 1,  f: 11, c: 6,  cal: 120, tags: [] },
+        { name: 'Almonds (1oz)',                        p: 6,  f: 14, c: 6,  cal: 164, tags: [] },
+        { name: 'Olive Oil (1 tbsp)',                   p: 0,  f: 14, c: 0,  cal: 120, tags: [] },
+        { name: 'Peanut Butter (2 tbsp)',               p: 7,  f: 16, c: 6,  cal: 190, tags: ['caloric'] },
+        { name: 'Walnuts (1oz)',                        p: 4,  f: 18, c: 4,  cal: 185, tags: ['caloric'] },
+        { name: 'Cashews (1oz)',                        p: 5,  f: 12, c: 9,  cal: 157, tags: [] },
+        { name: 'Sunflower Seeds (2 tbsp)',             p: 4,  f: 9,  c: 4,  cal: 103, tags: [] },
+        { name: 'Hummus (3 tbsp)',                      p: 3,  f: 5,  c: 7,  cal: 83,  tags: [] },
+        { name: 'Tahini (1 tbsp)',                      p: 3,  f: 8,  c: 3,  cal: 89,  tags: [] },
+        { name: 'Almond Butter (2 tbsp)',               p: 7,  f: 18, c: 6,  cal: 210, tags: ['caloric'] },
     ],
     veggies: [
-        { name: 'Broccoli (1 cup)', p: 3, f: 0, c: 6, cal: 31 },
-        { name: 'Spinach (2 cups)', p: 2, f: 0, c: 2, cal: 14 },
-        { name: 'Mixed Greens Salad', p: 1, f: 0, c: 3, cal: 15 },
-        { name: 'Asparagus (6 spears)', p: 2, f: 0, c: 4, cal: 20 },
+        { name: 'Broccoli (1 cup)',                     p: 3,  f: 0,  c: 6,  cal: 31  },
+        { name: 'Spinach (2 cups)',                     p: 2,  f: 0,  c: 2,  cal: 14  },
+        { name: 'Mixed Greens Salad',                   p: 1,  f: 0,  c: 3,  cal: 15  },
+        { name: 'Asparagus (6 spears)',                 p: 2,  f: 0,  c: 4,  cal: 20  },
+        { name: 'Zucchini (1 medium)',                  p: 2,  f: 0,  c: 7,  cal: 33  },
+        { name: 'Bell Pepper (1 medium)',               p: 1,  f: 0,  c: 7,  cal: 31  },
+        { name: 'Cucumber (1 cup sliced)',              p: 1,  f: 0,  c: 4,  cal: 16  },
+        { name: 'Kale (2 cups)',                        p: 4,  f: 1,  c: 14, cal: 68  },
+        { name: 'Mushrooms (1 cup)',                    p: 2,  f: 0,  c: 4,  cal: 21  },
+        { name: 'Cauliflower (1 cup)',                  p: 2,  f: 0,  c: 5,  cal: 27  },
+        { name: 'Brussels Sprouts (1 cup)',             p: 4,  f: 0,  c: 11, cal: 56  },
+        { name: 'Green Beans (1 cup)',                  p: 2,  f: 0,  c: 10, cal: 44  },
     ]
 };
 
 function generateMealPlan(targetCal, targetP, targetF, targetC) {
-    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const goal = S.d.goal || 'maintain';
+    const used = new Set();
+
+    function shuffle(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    // Score item against macro targets; pick randomly from top 3 matches for variety
+    function pickBest(pool, tP, tF, tC, preferTag) {
+        const avail = pool.filter(x => !used.has(x.name));
+        const pref = preferTag ? avail.filter(x => x.tags && x.tags.includes(preferTag)) : [];
+        const src = pref.length >= 2 ? pref : (avail.length ? avail : pool.slice());
+        const scored = src.map(item => {
+            const pE = tP > 0 ? Math.abs(item.p - tP) / tP : 0;
+            const fE = tF > 0 ? Math.abs(item.f - tF) / tF : 0;
+            const cE = tC > 0 ? Math.abs(item.c - tC) / tC : 0;
+            return { item, score: pE + fE + cE };
+        }).sort((a, b) => a.score - b.score);
+        const pick = scored[Math.floor(Math.random() * Math.min(3, scored.length))].item;
+        used.add(pick.name);
+        return pick;
+    }
+
+    function pickRandom(pool) {
+        const avail = shuffle(pool.filter(x => !used.has(x.name)));
+        const pick = avail.length ? avail[0] : pool[Math.floor(Math.random() * pool.length)];
+        used.add(pick.name);
+        return pick;
+    }
+
     const meals = [];
     let totP = 0, totF = 0, totC = 0, totCal = 0;
+    const proPref = goal === 'cut' ? 'lean' : null;
+    const fatPref = goal === 'bulk' ? 'caloric' : null;
 
-    // Meal 1: Breakfast
-    const bPro = pick([MEALS.proteins[3], MEALS.proteins[4]]); // Eggs or yogurt
-    const bCarb = pick([MEALS.carbs[2], MEALS.carbs[5]]); // Oats or banana
-    meals.push({ label: 'Meal 1 — Breakfast', items: [bPro, bCarb] });
+    // Distribute daily macro targets across meals by percentage
+    const splits = goal === 'bulk'
+        ? [0.25, 0.30, 0.28, 0.12, 0.05]   // B / L / D / pre-workout / evening
+        : [0.25, 0.30, 0.30, 0.15];         // B / L / D / snack
 
-    // Meal 2: Lunch
-    const lPro = pick([MEALS.proteins[0], MEALS.proteins[1], MEALS.proteins[5]]);
-    const lCarb = pick([MEALS.carbs[0], MEALS.carbs[4]]);
-    const lVeg = pick(MEALS.veggies);
-    meals.push({ label: 'Meal 2 — Lunch', items: [lPro, lCarb, lVeg] });
+    // Breakfast — morning-tagged picks scored against breakfast share of targets
+    const b = splits[0];
+    meals.push({ label: 'Meal 1 — Breakfast', items: [
+        pickBest(MEALS.proteins, targetP * b, 0, 0, 'morning'),
+        pickBest(MEALS.carbs, 0, 0, targetC * b, 'morning'),
+    ]});
 
-    // Meal 3: Dinner
-    const dPro = pick([MEALS.proteins[0], MEALS.proteins[2], MEALS.proteins[5]]);
-    const dCarb = pick([MEALS.carbs[1], MEALS.carbs[0]]);
-    const dFat = pick(MEALS.fats);
-    const dVeg = pick(MEALS.veggies);
-    meals.push({ label: 'Meal 3 — Dinner', items: [dPro, dCarb, dFat, dVeg] });
+    // Lunch — protein + carb scored against lunch share; veggie random
+    const l = splits[1];
+    const lunchItems = [
+        pickBest(MEALS.proteins, targetP * l, 0, 0, proPref),
+        pickBest(MEALS.carbs, 0, 0, targetC * l, null),
+        pickRandom(MEALS.veggies),
+    ];
+    if (goal === 'bulk') lunchItems.push(pickBest(MEALS.fats, 0, targetF * l, 0, fatPref));
+    meals.push({ label: 'Meal 2 — Lunch', items: lunchItems });
 
-    // Snack
-    const snk = pick([MEALS.fats[1], MEALS.fats[3], MEALS.proteins[4]]);
-    meals.push({ label: 'Snack', items: [snk] });
+    // Dinner — full protein + carb + fat + veggie, all scored against dinner share
+    const d = splits[2];
+    meals.push({ label: 'Meal 3 — Dinner', items: [
+        pickBest(MEALS.proteins, targetP * d, 0, 0, proPref),
+        pickBest(MEALS.carbs, 0, 0, targetC * d, null),
+        pickBest(MEALS.fats, 0, targetF * d, 0, fatPref),
+        pickRandom(MEALS.veggies),
+    ]});
+
+    // Snack(s)
+    const s = splits[3];
+    if (goal === 'bulk') {
+        meals.push({ label: 'Pre-Workout Snack', items: [
+            pickBest(MEALS.proteins, targetP * s, 0, 0, null),
+            pickBest(MEALS.carbs, 0, 0, targetC * s, null),
+        ]});
+        meals.push({ label: 'Evening Snack', items: [
+            pickBest(MEALS.fats, 0, targetF * splits[4], 0, 'caloric'),
+        ]});
+    } else {
+        const snackPool = [...MEALS.fats, ...MEALS.proteins.filter(x => x.tags && x.tags.includes('morning'))];
+        meals.push({ label: 'Snack', items: [
+            pickBest(snackPool, targetP * s * 0.5, targetF * s * 0.5, 0, null),
+        ]});
+    }
 
     meals.forEach(m => m.items.forEach(i => { totP += i.p; totF += i.f; totC += i.c; totCal += i.cal; }));
     return { meals, totP, totF, totC, totCal };
@@ -650,11 +748,22 @@ function route(input) {
     // ── NAME ──
     if (step === 'ask_name') {
         S.d.name = input;
-        say(`Good to meet you, <span class="gold">${S.d.name}</span>. I'm the BTF Assistant — here to help you train smarter and build a better tomorrow.`);
-        setTimeout(() => showMenu(), 600);
+        say(`Good to meet you, <span class="gold">${S.d.name}</span>. Let's get to work.`);
+        const pending = S.d._pendingTool;
+        S.d._pendingTool = null;
+        S.step = 'menu';
+        if (pending) setTimeout(() => route(pending), 400);
+        else setTimeout(() => showMenu(), 600);
 
     // ── MENU ──
     } else if (step === 'menu' || step === 'post_result' || step === 'meal_done') {
+        // Collect name on first tool selection
+        if (!S.d.name && input !== 'coaching' && input !== 'program' && input !== 'back_menu') {
+            S.d._pendingTool = input;
+            S.step = 'ask_name';
+            say("Before we dive in — what's your name?");
+            return;
+        }
         if (input === 'meal_again') {
             showMealPlan();
             return;
@@ -1056,7 +1165,17 @@ if (window.visualViewport) {
 // ─── Init ───
 window.onload = () => {
     say("Hey! I'm the <span class='gold'>BTF Assistant</span> — your personal toolkit from Better Tomorrow Fitness.");
-    setTimeout(() => say("Before we get started, what's your name?"), 500);
+    setTimeout(() => {
+        say("Here's what I can help you with today:");
+        opts([
+            { icon: '📊', label: 'BTF Calorie Calculator',    value: 'tdee_start'     },
+            { icon: '🏋️', label: 'BTF 1-Rep Max Estimator',  value: '1rm_start'      },
+            { icon: '🍽️', label: 'Sample Meal Plan',          value: 'meal_start'     },
+            { icon: '📈', label: 'Progress Projector',         value: 'progress_start' },
+            { icon: '🤝', label: 'About 1-on-1 Coaching',     value: 'coaching'       },
+            { icon: '📋', label: 'BTF 4-Week Program Builder', value: 'program'       },
+        ]);
+    }, 500);
 };
 </script>
 </body>
