@@ -14,13 +14,18 @@
             --gold-dim: rgba(197,160,40,0.1);
             --text: #1a1a1a;
             --dim: #777;
-            --bot-bg: #f0f0f0;
-            --usr-bg: #222;
+            --bot-bg: #f2f2f2;
+            --usr-bg: #1a1a1a;
             --usr-text: #fff;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; overflow: hidden; touch-action: manipulation; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html, body { 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+            touch-action: manipulation; 
+        }
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: var(--bg);
@@ -31,7 +36,7 @@
 
         /* ── HEADER ── */
         #hdr {
-            padding: 14px 20px;
+            padding: 12px 16px;
             background: #000;
             color: #fff;
             display: flex;
@@ -39,12 +44,14 @@
             justify-content: space-between;
             z-index: 100;
             border-bottom: 2px solid var(--gold);
+            flex-shrink: 0;
         }
-        #hdr-title { display: flex; align-items: center; gap: 12px; }
-        #hdr-title img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--gold); background: #222; }
-        #hdr-title div h1 { font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); }
-        #hdr-title div p { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
-        #hdr-close { background: none; border: none; color: #fff; cursor: pointer; padding: 8px; opacity: 0.7; }
+        #hdr-title { display: flex; align-items: center; gap: 10px; }
+        .ava-hdr { width: 34px; height: 34px; border-radius: 50%; background: #222; border: 1.5px solid var(--gold); display: flex; align-items: center; justify-content: center; }
+        .ava-hdr svg { width: 18px; height: 18px; stroke: var(--gold); }
+        #hdr-brand h1 { font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 2px; color: var(--gold); line-height: 1.2; }
+        #hdr-brand p { font-size: 9px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+        #hdr-close { background: none; border: none; color: #fff; cursor: pointer; padding: 4px; opacity: 0.7; }
 
         /* ── CHAT AREA ── */
         #chat {
@@ -56,6 +63,7 @@
             gap: 16px;
             background: var(--bg);
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         #chat::-webkit-scrollbar { display: none; }
 
@@ -66,13 +74,13 @@
         .bot-wrap { align-items: flex-start; }
         .usr-wrap { align-items: flex-end; justify-content: flex-end; }
 
-        .ava { width: 30px; height: 30px; border-radius: 50%; background: #000; display: flex; align-items: center; justify-content: center; border: 1px solid var(--gold); flex-shrink: 0; margin-top: 4px; }
-        .ava svg { width: 16px; height: 16px; stroke: var(--gold); }
+        .ava { width: 28px; height: 28px; border-radius: 50%; background: #000; display: flex; align-items: center; justify-content: center; border: 1px solid var(--gold); flex-shrink: 0; margin-top: 4px; }
+        .ava svg { width: 14px; height: 14px; stroke: var(--gold); }
 
         .m { 
             max-width: 82%; 
             padding: 12px 16px; 
-            font-size: 15px; 
+            font-size: 14.5px; 
             line-height: 1.5; 
             position: relative;
         }
@@ -88,29 +96,29 @@
             font-weight: 500;
         }
 
-        .ts { font-size: 10px; color: var(--dim); margin-top: 4px; margin-left: 4px; }
+        .ts { font-size: 9px; color: var(--dim); margin-top: 5px; margin-left: 5px; text-transform: uppercase; }
 
-        /* ── PILL BUTTONS ── */
-        .opts { display: flex; flex-direction: column; gap: 10px; width: 100%; padding: 4px 0; animation: mIn .4s ease-out; }
+        /* ── OPTION BUTTONS ── */
+        .opts { display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 4px 0; animation: mIn .4s ease-out; }
         .ob {
             background: #fff; 
             color: #000; 
             border: 1.5px solid #000;
-            padding: 14px 20px; 
+            padding: 13px 20px; 
             border-radius: 30px; 
             cursor: pointer; 
             text-align: center; 
             font-size: 14px;
             font-family: 'Inter', sans-serif; 
             font-weight: 600;
-            transition: all .2s;
-            box-shadow: 0 2px 0 #000;
+            transition: all .15s;
+            box-shadow: 0 3px 0 #000;
             touch-action: manipulation;
         }
-        .ob:hover, .ob:active { transform: translateY(1px); box-shadow: 0 1px 0 #000; background: var(--gold-dim); border-color: var(--gold); }
+        .ob:active { transform: translateY(2px); box-shadow: 0 1px 0 #000; background: var(--gold-dim); border-color: var(--gold); }
 
         /* ── INPUT AREA ── */
-        #ibar-wrap { border-top: 1px solid var(--border); background: #fff; padding: 12px 16px; }
+        #ibar-wrap { border-top: 1px solid var(--border); background: #fff; padding: 10px 16px; flex-shrink: 0; }
         #ibar {
             display: flex; 
             align-items: center; 
@@ -118,7 +126,7 @@
             background: #f8f8f8;
             border: 1.5px solid var(--border);
             border-radius: 30px;
-            padding: 4px 6px 4px 18px;
+            padding: 4px 6px 4px 16px;
         }
         #ibar input {
             flex: 1; 
@@ -134,46 +142,59 @@
             background: #000; 
             color: #fff; 
             border: none; 
-            width: 40px; 
-            height: 40px; 
+            width: 38px; 
+            height: 38px; 
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform .2s;
         }
-        #ibar button:active { transform: scale(0.9); }
 
-        /* ── RESULT CARDS & CANVAS ── */
-        .rz-wrap { width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin: 10px 0; border: 2px solid var(--gold); }
-        .rz { position: relative; width: 100%; }
+        /* ── CARDS & CANVAS ── */
+        .rz-wrap { width: 100%; background: #000; border-radius: 12px; overflow: hidden; margin: 12px 0; border: 2px solid var(--gold); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+        .rz { position: relative; width: 100%; min-height: 200px; display: flex; align-items: center; justify-content: center; }
         .rz canvas { width: 100%; display: block; }
-        .rz.locked canvas { filter: blur(20px) brightness(0.4); }
+        .rz.locked canvas { filter: blur(22px) brightness(0.4); }
         
         .save-btn {
             background: var(--gold);
             color: #000;
             border: none;
-            padding: 12px;
+            padding: 14px;
             width: 100%;
             font-weight: 800;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             cursor: pointer;
+            transition: background .2s;
         }
+        .save-btn:active { background: #d4af37; }
 
-        /* ── REUSABLE UI ── */
-        .stat-card { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: center; margin: 8px 0; }
-        .stat-card .val { font-size: 32px; font-weight: 800; color: #000; }
+        .stat-card { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 22px; text-align: center; margin: 8px 0; border-left: 4px solid var(--gold); }
+        .stat-card .val { font-size: 36px; font-weight: 800; color: #000; line-height: 1; margin: 5px 0; }
         .stat-card .lbl { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; }
 
+        /* ── MEAL PLAN ── */
+        .meal-card { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 16px; margin: 8px 0; border-left: 4px solid var(--gold); }
+        .meal-title { font-family: 'Cinzel', serif; font-size: 10px; color: var(--gold); letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .meal-row { display: flex; justify-content: space-between; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .meal-row:last-child { border-bottom: none; }
+        .meal-name { font-weight: 600; color: #333; }
+        .meal-cal { color: var(--dim); font-size: 11px; }
+
+        /* ── PROGRESS ── */
+        .prog-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .prog-row .w { font-weight: 700; font-size: 16px; }
+        .prog-row .d { font-size: 11px; color: var(--dim); text-transform: uppercase; }
+        .prog-row .c { font-size: 12px; font-weight: 600; color: var(--gold); }
+
         @media (max-width: 480px) {
-            #hdr { padding: 12px 16px; }
             #chat { padding: 16px 14px; }
             .m { font-size: 14px; }
             .ob { padding: 12px 16px; }
+            .stat-card .val { font-size: 32px; }
         }
     </style>
 </head>
@@ -181,14 +202,14 @@
 
 <div id="hdr">
     <div id="hdr-title">
-        <div class="ava"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-        <div>
+        <div class="ava-hdr"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <div id="hdr-brand">
             <h1>BTF ASSISTANT</h1>
             <p>Better Tomorrow Fitness</p>
         </div>
     </div>
     <button id="hdr-close">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
 </div>
 
@@ -198,7 +219,7 @@
     <div id="ibar">
         <input type="text" id="inp" placeholder="Type a message..." autocomplete="off">
         <button id="sbtn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </button>
     </div>
 </div>
@@ -209,15 +230,7 @@ const inp = document.getElementById('inp');
 const sbtn = document.getElementById('sbtn');
 const closeBtn = document.getElementById('hdr-close');
 
-closeBtn.onclick = () => {
-    parent.postMessage('close_btf', '*');
-};
-
 const GOLD = '#C5A028';
-const URLS = {
-    program: 'https://www.bettertomorrowfitness.com/product-page/btf-4-week-custom-program',
-    coaching: 'https://forms.gle/CBc71KbhJGwZ8TZa9',
-};
 const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbw5h5OgFOH6KyiNQr_LGqjUEXakjpDuHETW69BsNMzAD1pAEzAm8GhvqN8p2kgBjsilgQ/exec';
 
 let S = { step: 'welcome', d: {} };
@@ -228,15 +241,10 @@ function scroll() { setTimeout(() => chat.scrollTop = chat.scrollHeight, 100); }
 function say(html, type = 'bot') {
     const wrap = document.createElement('div');
     wrap.className = `m-wrap ${type}-wrap`;
-    
     let content = '';
-    if (type === 'bot') {
-        content += `<div class="ava"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>`;
-    }
-    
+    if (type === 'bot') content += `<div class="ava"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>`;
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     content += `<div><div class="m ${type}">${html}</div><div class="ts">${time}</div></div>`;
-    
     wrap.innerHTML = content;
     chat.appendChild(wrap);
     scroll();
@@ -259,16 +267,16 @@ function opts(list) {
 function showHeightPicker(type) {
     const w = document.createElement('div');
     w.className = 'opts';
-    w.style.flexDirection = 'row';
-    w.style.flexWrap = 'wrap';
-    w.style.justifyContent = 'center';
+    w.style.display = 'grid';
+    w.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    w.style.gap = '8px';
     
     const vals = type === 'feet' ? [4, 5, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     vals.forEach(v => {
         const b = document.createElement('button');
         b.className = 'ob';
-        b.style.flex = '0 0 calc(25% - 8px)';
-        b.style.padding = '12px 0';
+        b.style.padding = '10px 0';
+        b.style.boxShadow = '0 2px 0 #000';
         b.textContent = v + (type === 'feet' ? "'" : '"');
         b.onclick = () => { w.remove(); say(v + (type === 'feet' ? " ft" : " in"), 'usr'); route(String(v)); };
         w.appendChild(b);
@@ -277,301 +285,246 @@ function showHeightPicker(type) {
     scroll();
 }
 
-function addEl(html) {
-    const t = document.createElement('div');
-    t.innerHTML = html.trim();
-    chat.appendChild(t.firstElementChild);
-    scroll();
-}
+const addEl = h => { const t=document.createElement('div'); t.innerHTML=h.trim(); chat.appendChild(t.firstElementChild); scroll(); return chat.lastElementChild; };
 
 // ─── Lead Logic ───
 function saveLead(data) {
     const payload = { timestamp: new Date().toISOString(), ...data };
-    if (WEBHOOK_URL) {
-        fetch(WEBHOOK_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).catch(e => console.warn(e));
-    }
+    fetch(WEBHOOK_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) }).catch(e=>console.warn(e));
 }
 
 // ─── Formulas ───
-function calcBMR() {
-    const wKg = S.d.weight * 0.453592, hCm = S.d.height * 2.54;
-    let bmr = (10 * wKg) + (6.25 * hCm) - (5 * S.d.age);
-    return Math.round(S.d.sex === 'male' ? bmr + 5 : bmr - 161);
-}
-function calcMacros(tdee, goal) {
-    let cal, pM, fM;
-    if (goal === 'cut') { cal = tdee - 500; pM = 1.2; fM = 0.25; }
-    else if (goal === 'bulk') { cal = tdee + 300; pM = 1.0; fM = 0.4; }
-    else { cal = tdee; pM = 1.0; fM = 0.35; }
+const calcBMR = () => {
+    let b = (10 * (S.d.weight * 0.453592)) + (6.25 * (S.d.height * 2.54)) - (5 * S.d.age);
+    return Math.round(S.d.sex==='male' ? b+5 : b-161);
+};
+const calcMacros = (t, g) => {
+    let c, pM, fM;
+    if(g==='cut'){ c=t-500; pM=1.2; fM=0.25; }
+    else if(g==='bulk'){ c=t+300; pM=1.0; fM=0.35; }
+    else { c=t; pM=1.0; fM=0.3; }
     const p = Math.round(S.d.weight * pM), f = Math.round(S.d.weight * fM);
-    const c = Math.max(0, Math.round((cal - (p * 4) - (f * 9)) / 4));
-    return { cal, p, f, c };
-}
-function calc1RM(w, r) { return Math.round(w * (1 + r / 30)); }
+    return { cal:c, p, f, c: Math.round((c-(p*4)-(f*9))/4) };
+};
 
-// ─── Canvas Rendering ───
-function drawTDEE(canvas, goal, emailLocked) {
-    const ctx = canvas.getContext('2d'), W = 600, H = 840;
-    canvas.width = W; canvas.height = H;
-    
-    ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle = GOLD; ctx.lineWidth = 10; ctx.strokeRect(5,5,W-10,H-10);
-    
-    ctx.textAlign = 'center';
-    ctx.fillStyle = GOLD; ctx.font = '700 28px Cinzel';
-    ctx.fillText('BETTER TOMORROW FITNESS', W/2, 80);
-    ctx.font = '400 14px Inter'; ctx.fillStyle = '#666'; ctx.fillText('PERSONALIZED METABOLIC PROFILE', W/2, 110);
-    
-    ctx.strokeStyle = '#222'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(50, 135); ctx.lineTo(W-50, 135); ctx.stroke();
-    
-    ctx.textAlign = 'left'; ctx.fillStyle = '#999'; ctx.font = '400 14px Inter';
-    ctx.fillText(`CLIENT: ${S.d.name.toUpperCase()}`, 60, 175);
-    ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 200);
-    
-    ctx.textAlign = 'center'; ctx.fillStyle = '#444'; ctx.font = 'bold 12px Inter'; ctx.fillText('BASAL METABOLIC RATE', W/2, 260);
-    ctx.fillStyle = '#fff'; ctx.font = '800 64px Inter'; ctx.fillText(S.d.bmr.toLocaleString(), W/2, 320);
-    ctx.fillStyle = '#444'; ctx.font = '400 12px Inter'; ctx.fillText('DAILY CALORIES AT REST', W/2, 345);
-    
-    ctx.fillStyle = GOLD; ctx.font = 'bold 12px Inter'; ctx.fillText('TOTAL DAILY ENERGY EXPENDITURE (TDEE)', W/2, 400);
-    ctx.fillStyle = '#fff'; ctx.font = '900 84px Inter'; ctx.fillText(S.d.tdee.toLocaleString(), W/2, 480);
-    ctx.fillStyle = GOLD; ctx.font = '400 14px Inter'; ctx.fillText('MAINTENANCE CALORIES / DAY', W/2, 510);
-    
-    if (emailLocked) {
-        ctx.fillStyle = 'rgba(0,0,0,0.8)'; ctx.fillRect(40, 540, W-80, 240);
-        ctx.fillStyle = GOLD; ctx.font = '700 20px Cinzel'; ctx.fillText('UNLOCK MACRO BREAKDOWN', W/2, 650);
-        ctx.font = '400 14px Inter'; ctx.fillStyle = '#fff'; ctx.fillText('Enter email to see your targets', W/2, 680);
+// ─── Renderers ───
+function drawTDEE(canvas, goal, locked) {
+    const ctx = canvas.getContext('2d'), W=600, H=840;
+    canvas.width=W; canvas.height=H;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
+    ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font='700 30px Cinzel'; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
+    ctx.font='700 12px Inter'; ctx.fillStyle='#444'; ctx.fillText('PERSONALIZED METABOLIC PROFILE', W/2, 115);
+    ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(50, 140); ctx.lineTo(W-50, 140); ctx.stroke();
+    ctx.textAlign='left'; ctx.fillStyle='#888'; ctx.font='600 14px Inter';
+    ctx.fillText(`CLIENT: ${S.d.name.toUpperCase()}`, 60, 185);
+    ctx.fillText(`${S.d.age} YRS | ${S.d.sex.toUpperCase()} | ${S.d.weight} LBS | ${Math.floor(S.d.height/12)}'${S.d.height%12}"`, 60, 212);
+    ctx.textAlign='center'; ctx.fillStyle='#555'; ctx.font='700 10px Inter'; ctx.fillText('BASAL METABOLIC RATE (BMR)', W/2, 275);
+    ctx.fillStyle='#fff'; ctx.font='800 64px Inter'; ctx.fillText(S.d.bmr.toLocaleString(), W/2, 340);
+    ctx.fillStyle='#555'; ctx.font='400 12px Inter'; ctx.fillText('DAILY CALORIES AT REST', W/2, 365);
+    ctx.fillStyle=GOLD; ctx.font='700 12px Inter'; ctx.fillText('TOTAL DAILY ENERGY EXPENDITURE (TDEE)', W/2, 420);
+    ctx.fillStyle='#fff'; ctx.font='900 88px Inter'; ctx.fillText(S.d.tdee.toLocaleString(), W/2, 510);
+    ctx.fillStyle=GOLD; ctx.font='800 14px Inter'; ctx.fillText('MAINTENANCE KCALS / DAY', W/2, 540);
+    if(locked){
+        ctx.fillStyle='rgba(0,0,0,0.85)'; ctx.fillRect(50, 570, W-100, 200);
+        ctx.fillStyle=GOLD; ctx.font='700 22px Cinzel'; ctx.fillText('MACROS LOCKED', W/2, 665);
+        ctx.fillStyle='#fff'; ctx.font='400 14px Inter'; ctx.fillText('Enter email to reveal your target macros', W/2, 695);
     } else {
         const m = calcMacros(S.d.tdee, goal);
-        const goals = { cut:'FAT LOSS (CUTTING)', bulk:'LEAN BULK', maintenance:'MAINTENANCE' };
-        ctx.fillStyle = GOLD; ctx.font = '700 22px Inter'; ctx.fillText(goals[goal], W/2, 570);
-        ctx.fillStyle = '#fff'; ctx.font = '800 48px Inter'; ctx.fillText(`${m.cal.toLocaleString()} KCAL`, W/2, 630);
-        
-        const boxes = [
-            { l:'PROTEIN', v: m.p+'g', c:'#4ade80' },
-            { l:'FAT', v: m.f+'g', c:'#f87171' },
-            { l:'CARBS', v: m.c+'g', c:'#60a5fa' }
-        ];
-        boxes.forEach((b, i) => {
-            const x = 80 + i * 160;
-            ctx.fillStyle = '#111'; ctx.fillRect(x, 680, 120, 100);
-            ctx.fillStyle = b.c; ctx.fillRect(x, 680, 120, 4);
-            ctx.fillStyle = '#666'; ctx.font = '700 12px Inter'; ctx.fillText(b.l, x + 60, 710);
-            ctx.fillStyle = '#fff'; ctx.font = '800 28px Inter'; ctx.fillText(b.v, x + 60, 755);
+        const gN = { cut:'FAT LOSS (CUTTING)', bulk:'LEAN BULK', maintenance:'MAINTENANCE' };
+        ctx.fillStyle=GOLD; ctx.font='800 24px Inter'; ctx.fillText(gN[goal], W/2, 600);
+        ctx.fillStyle='#fff'; ctx.font='900 52px Inter'; ctx.fillText(`${m.cal.toLocaleString()} KCAL`, W/2, 665);
+        const b = [{l:'PROTEIN', v:m.p+'g', c:'#4ade80'},{l:'FAT', v:m.f+'g', c:'#f87171'},{l:'CARBS', v:m.c+'g', c:'#60a5fa'}];
+        b.forEach((x, i) => {
+            const xp = 80 + i*160; ctx.fillStyle='#111'; ctx.fillRect(xp, 715, 120, 90);
+            ctx.fillStyle=x.c; ctx.fillRect(xp, 715, 120, 4);
+            ctx.fillStyle='#666'; ctx.font='700 11px Inter'; ctx.fillText(x.l, xp+60, 745);
+            ctx.fillStyle='#fff'; ctx.font='800 28px Inter'; ctx.fillText(x.v, xp+60, 785);
         });
     }
-    
-    ctx.fillStyle = '#333'; ctx.font = '400 12px Inter'; ctx.fillText('BETTERTOMORROWFITNESS.COM', W/2, H-40);
+    ctx.textAlign='center'; ctx.fillStyle='#333'; ctx.font='400 12px Inter'; ctx.fillText('CONSISTENCY > PERFECTION  ·  BETTERTOMORROWFITNESS.COM', W/2, H-40);
 }
 
-function draw1RM(canvas, emailLocked) {
-    const ctx = canvas.getContext('2d'), W = 600, H = 840;
-    canvas.width = W; canvas.height = H;
-    ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H);
-    ctx.strokeStyle = GOLD; ctx.lineWidth = 10; ctx.strokeRect(5,5,W-10,H-10);
-    
-    ctx.textAlign = 'center';
-    ctx.fillStyle = GOLD; ctx.font = '700 28px Cinzel'; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 80);
-    ctx.font = '400 14px Inter'; ctx.fillStyle = '#444'; ctx.fillText('1-REP MAX STRENGTH PROFILE', W/2, 110);
-    
-    ctx.fillStyle = '#fff'; ctx.font = '400 16px Inter'; ctx.fillText(`ATHLETE: ${S.d.name.toUpperCase()}`, W/2, 170);
-    ctx.fillStyle = GOLD; ctx.font = '700 24px Inter'; ctx.fillText((S.d.exercise||'').toUpperCase(), W/2, 210);
-    
-    ctx.fillStyle = '#222'; ctx.font = '800 120px Inter'; ctx.fillText(S.d.oneRM, W/2, 380);
-    ctx.fillStyle = GOLD; ctx.font = '900 40px Inter'; ctx.fillText('LBS', W/2, 430);
-    
-    if (emailLocked) {
-        ctx.fillStyle = 'rgba(0,0,0,0.8)'; ctx.fillRect(50, 480, W-100, 300);
-        ctx.fillStyle = GOLD; ctx.font = '700 20px Cinzel'; ctx.fillText('UNLOCK TRAINING TABLE', W/2, 600);
-        ctx.font = '400 14px Inter'; ctx.fillStyle = '#fff'; ctx.fillText('Enter email to see your % breakdown', W/2, 630);
+function draw1RM(canvas, locked) {
+    const ctx = canvas.getContext('2d'), W=600, H=840;
+    canvas.width=W; canvas.height=H;
+    ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle=GOLD; ctx.lineWidth=12; ctx.strokeRect(6,6,W-12,H-12);
+    ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font='700 30px Cinzel'; ctx.fillText('BETTER TOMORROW FITNESS', W/2, 85);
+    ctx.font='700 14px Inter'; ctx.fillStyle='#444'; ctx.fillText('1-REP MAX STRENGTH PROFILE', W/2, 115);
+    ctx.textAlign='left'; ctx.fillStyle='#888'; ctx.font='600 16px Inter'; ctx.fillText(`ATHLETE: ${S.d.name.toUpperCase()}`, 60, 185);
+    ctx.fillStyle=GOLD; ctx.font='800 28px Inter'; ctx.fillText((S.d.exercise || '').toUpperCase(), 60, 220);
+    ctx.textAlign='center'; ctx.fillStyle='#222'; ctx.font='900 140px Inter'; ctx.fillText(S.d.oneRM, W/2, 400);
+    ctx.fillStyle=GOLD; ctx.font='900 48px Inter'; ctx.fillText('LBS', W/2, 455);
+    if(locked){
+        ctx.fillStyle='rgba(0,0,0,0.85)'; ctx.fillRect(50, 500, W-100, 280);
+        ctx.fillStyle=GOLD; ctx.font='700 22px Cinzel'; ctx.fillText('TABLE LOCKED', W/2, 630);
+        ctx.fillStyle='#fff'; ctx.font='400 14px Inter'; ctx.fillText('Enter email to unlock training table', W/2, 660);
     } else {
-        const pcts = [95, 90, 85, 80, 75, 70];
-        pcts.forEach((p, i) => {
-            const y = 520 + i * 45;
-            const val = Math.round(S.d.oneRM * (p/100));
-            ctx.textAlign = 'left'; ctx.fillStyle = '#666'; ctx.fillText(`${p}%`, 100, y);
-            ctx.textAlign = 'center'; ctx.fillStyle = '#fff'; ctx.font = '700 22px Inter'; ctx.fillText(`${val} LBS`, W/2, y);
-            ctx.textAlign = 'right'; ctx.fillStyle = '#444'; ctx.font = '400 14px Inter'; ctx.fillText(`${14-i*2} REPS`, W-100, y);
+        const p = [95, 90, 85, 80, 75, 70];
+        p.forEach((x, i) => {
+            const y = 540 + i*42;
+            ctx.textAlign='left'; ctx.fillStyle='#555'; ctx.font='700 14px Inter'; ctx.fillText(x+'%', 100, y);
+            ctx.textAlign='center'; ctx.fillStyle='#fff'; ctx.font='800 24px Inter'; ctx.fillText(Math.round(S.d.oneRM*(x/100))+' LBS', W/2, y);
+            ctx.textAlign='right'; ctx.fillStyle='#444'; ctx.font='400 14px Inter'; ctx.fillText((14-i*2)+' REPS', W-100, y);
         });
     }
-    ctx.textAlign = 'center'; ctx.fillStyle = GOLD; ctx.fillText('CONSISTENCY > PERFECTION', W/2, H-50);
+    ctx.textAlign='center'; ctx.fillStyle=GOLD; ctx.font='700 14px Inter'; ctx.fillText('CONSISTENCY > PERFECTION', W/2, H-50);
 }
 
-function saveCanvasAsImg(canvasId) {
-    const canvas = document.getElementById(canvasId);
-    const dataUrl = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.download = `BTF-${S.d.name}-${new Date().getTime()}.png`;
-    link.href = dataUrl;
-    link.click();
-    
-    // Fallback for some mobile browsers
-    if (window.navigator.userAgent.includes('iPhone') || window.navigator.userAgent.includes('Mobile')) {
-        const newWin = window.open('');
-        newWin.document.write(`<img src="${dataUrl}" style="width:100%" />`);
-        newWin.document.write('<p style="text-align:center;font-family:sans-serif;padding:20px">Long press the image above to save it to your phone.</p>');
-    }
+function saveCanvasAsImg(id) {
+    const c = document.getElementById(id);
+    const u = c.toDataURL('image/png');
+    const w = window.open('');
+    w.document.write(`<body style="margin:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;color:#fff;font-family:sans-serif">
+        <img src="${u}" style="max-width:100%;max-height:85vh;box-shadow:0 0 50px rgba(0,0,0,0.5)">
+        <p style="padding:20px;text-align:center;font-weight:bold">LONG PRESS IMAGE TO SAVE TO CAMERA ROLL</p>
+        <button onclick="window.close()" style="background:#C5A028;border:none;padding:10px 30px;font-weight:bold;border-radius:20px">CLOSE</button>
+    </body>`);
 }
 
 // ─── Flow ───
-function showMenu() {
+const showMenu = () => {
     S.step = 'menu';
-    say("I'm here to help. What are you reaching out about today?");
+    say("How can I help you train smarter today?");
     opts([
-        { label: 'BTF Calorie Calculator', value: 'tdee' },
-        { label: '1-Rep Max Estimator', value: '1rm' },
-        { label: 'Sample Meal Plan', value: 'meal' },
-        { label: 'Progress Projector', value: 'prog' },
-        { label: '1-on-1 Coaching Inquiry', value: 'coach' },
-        { label: 'Back to Site', value: 'close' }
+        {label:'BTF Calorie Calculator', value:'tdee'},
+        {label:'1-Rep Max Estimator', value:'1rm'},
+        {label:'Sample Meal Plan', value:'meal'},
+        {label:'Progress Projector', value:'prog'},
+        {label:'1-on-1 Coaching', value:'coach'},
+        {label:'Back to Site', value:'close'}
     ]);
-}
+};
 
 function route(val) {
-    const step = S.step;
-    
-    if (step === 'welcome') {
-        showMenu();
-    } else if (step === 'menu') {
-        if (val === 'close') { parent.postMessage('close_btf', '*'); return; }
-        S.tool = val;
-        S.step = 'ask_name';
-        say("I can definitely help with that! First, can you tell me your name?");
-    } else if (step === 'ask_name') {
-        S.d.name = val;
-        say(`Thanks, <span class="gold">${val}</span>! Let's get started with your <span class="gold">${S.tool === 'tdee' ? 'Calorie' : S.tool === '1rm' ? 'Strength' : 'Fitness'}</span> profile.`);
-        if (S.tool === 'tdee' || S.tool === 'meal' || S.tool === 'prog') {
-            S.step = 'tdee_sex';
-            say("What is your biological sex?");
-            opts([{label:'Male', value:'male'}, {label:'Female', value:'female'}]);
-        } else if (S.tool === '1rm') {
-            S.step = '1rm_ex';
-            say("Which exercise are we testing? (e.g. Bench Press, Squat)");
-        } else if (S.tool === 'coach') {
-            S.step = 'coach_query';
-            say("Our 1-on-1 coaching is a 12-week minimum commitment for serious transformations. Are you ready to commit for 12 weeks?");
-            opts([{label:'Yes, I am ready', value:'yes'}, {label:'Not yet', value:'no'}]);
+    if (S.step === 'welcome') { showMenu(); return; }
+    if (S.step === 'menu') {
+        if(val==='close'){ parent.postMessage('close_btf','*'); return; }
+        S.tool = val; 
+        if (S.d.name) {
+            say(`Got it, <span class="gold">${S.d.name}</span>. Let's get into the ${S.tool === 'tdee' ? 'Calorie Calculator' : S.tool === '1rm' ? '1-Rep Max Estimator' : S.tool === 'meal' ? 'Meal Plan' : 'tools'}.`);
+            startTool();
+        } else {
+            S.step = 'ask_name';
+            say("I can definitely help with that. First, can you tell me your name?");
         }
-    } else if (step === 'tdee_sex') {
-        S.d.sex = val; S.step = 'tdee_age';
-        inp.inputMode = 'numeric'; say("How old are you?");
-    } else if (step === 'tdee_age') {
-        const v = parseInt(val);
-        if (isNaN(v) || v < 10) { say("Enter a valid age."); return; }
-        S.d.age = v; S.step = 'tdee_weight';
-        inp.inputMode = 'decimal'; say("Current body weight (lbs)?");
-    } else if (step === 'tdee_weight') {
-        const v = parseFloat(val);
-        if (isNaN(v) || v < 50) { say("Enter a valid weight."); return; }
-        S.d.weight = v; S.step = 'tdee_feet';
-        say("What is your height? Select feet:"); showHeightPicker('feet');
-    } else if (step === 'tdee_feet') {
-        S.d._ft = parseInt(val); S.step = 'tdee_in';
-        say(`${val} feet — and how many inches?`); showHeightPicker('in');
-    } else if (step === 'tdee_in') {
-        S.d.height = (S.d._ft * 12) + parseInt(val);
-        S.d.bmr = calcBMR();
-        say(`Your BMR is <span class="gold">${S.d.bmr.toLocaleString()}</span> calories — what the body burns at rest.`);
-        setTimeout(() => {
-            say("Factor in your activity level to find your TDEE:");
-            opts([
-                {label:'Sedentary (Desk Job)', value:'1.2'},
-                {label:'Light (1-3 days)', value:'1.375'},
-                {label:'Moderate (3-5 days)', value:'1.55'},
-                {label:'Very Active (6+ days)', value:'1.725'}
-            ]);
-            S.step = 'tdee_act';
-        }, 800);
-    } else if (step === 'tdee_act') {
-        S.d.activity = parseFloat(val);
-        S.d.tdee = Math.round(S.d.bmr * S.d.activity);
-        
-        const wrap = document.createElement('div');
-        wrap.className = 'rz-wrap';
-        wrap.innerHTML = `<div class="rz locked"><canvas id="main-rz"></canvas></div><button class="save-btn" id="sbtn-lock">Enter Email to Unlock & Save</button>`;
-        chat.appendChild(wrap);
-        drawTDEE(document.getElementById('main-rz'), 'cut', true);
-        scroll();
-        
-        say("I've generated your full profile! Enter your email to unlock the macro breakdown and download your card.");
-        inp.inputMode = 'email'; inp.type = 'email';
-        S.step = 'tdee_email';
-    } else if (step === 'tdee_email') {
-        if (!val.includes('@')) { say("Enter a valid email."); return; }
-        S.d.email = val;
-        say("Unlock complete! Pick your goal to see your daily targets:");
-        opts([{label:'Fat Loss', value:'cut'}, {label:'Muscle Gain', value:'bulk'}, {label:'Maintenance', value:'maintenance'}]);
-        S.step = 'tdee_goal';
-    } else if (step === 'tdee_goal') {
-        S.d.goal = val;
-        const c = document.getElementById('main-rz');
-        drawTDEE(c, val, false);
+        return;
+    }
+
+function startTool() {
+    if (['tdee','meal','prog'].includes(S.tool)) { 
+        if (S.d.sex && S.d.age && S.d.weight && S.d.height) {
+            if (S.tool === 'meal') { showMeal(); return; }
+            if (S.tool === 'prog') { showProg(); return; }
+            // If they have stats but want TDEE again, just show activity
+            say("I have your stats. Let's re-calculate based on your activity:");
+            opts([{label:'Sedentary',value:'1.2'},{label:'Light',value:'1.375'},{label:'Moderate',value:'1.55'},{label:'Very Active',value:'1.725'}]);
+            S.step='act';
+        } else {
+            S.step='sex'; 
+            say("What is your biological sex?"); 
+            opts([{label:'Male',value:'male'},{label:'Female',value:'female'}]); 
+        }
+    }
+    else if (S.tool==='1rm') { S.step='1rm_ex'; say("Which exercise are we testing?"); }
+    else if (S.tool==='coach') { S.step='coach'; say("Our 1-on-1 coaching is a 12-week minimum commitment. Are you ready?"); opts([{label:'Yes',value:'y'},{label:'Not yet',value:'n'}]); }
+}
+
+    if (S.step === 'ask_name') {
+        S.d.name = val;
+        say(`Good to meet you, <span class="gold">${val}</span>! Let's get into your stats.`);
+        startTool();
+        return;
+    }
+
+    const s = S.step;
+    if(s==='sex'){ S.d.sex=val; S.step='age'; inp.inputMode='numeric'; say("How old are you?"); }
+    else if(s==='age'){ S.d.age=parseInt(val); S.step='weight'; inp.inputMode='decimal'; say("Weight (lbs)?"); }
+    else if(s==='weight'){ S.d.weight=parseFloat(val); S.step='feet'; say("Height? Select feet:"); showHeightPicker('feet'); }
+    else if(s==='feet'){ S.d._f=parseInt(val); S.step='inch'; say(val+" feet — and inches?"); showHeightPicker('in'); }
+    else if(s==='inch'){
+        S.d.height=(S.d._f*12)+parseInt(val); S.d.bmr=calcBMR();
+        say(`Your BMR is <span class="gold">${S.d.bmr.toLocaleString()}</span>.`);
+        setTimeout(()=>{
+            say("Select your activity level:");
+            opts([{label:'Sedentary',value:'1.2'},{label:'Light',value:'1.375'},{label:'Moderate',value:'1.55'},{label:'Very Active',value:'1.725'}]);
+            S.step='act';
+        },600);
+    } else if(s==='act'){
+        S.d.activity=parseFloat(val); S.d.tdee=Math.round(S.d.bmr*val);
+        if(S.tool==='meal'){ showMeal(); return; }
+        if(S.tool==='prog'){ showProg(); return; }
+        const w = addEl(`<div class="rz-wrap"><div class="rz locked"><canvas id="main-rz"></canvas></div><button class="save-btn" id="l-btn">Enter Email to Unlock</button></div>`);
+        setTimeout(()=>drawTDEE(document.getElementById('main-rz'),'cut',true),100);
+        say("Profile generated! Enter your email to unlock your macros and save your card.");
+        inp.inputMode='email'; inp.type='email'; S.step='email';
+    } else if(s==='email'){
+        S.d.email=val;
+        if(S.tool==='1rm'){
+            const c=document.getElementById('rm-rz'); draw1RM(c,false);
+            c.parentElement.classList.remove('locked');
+            document.getElementById('rm-btn').textContent="Download Result Card";
+            document.getElementById('rm-btn').onclick=()=>saveCanvasAsImg('rm-rz');
+            saveLead(S.d); say("Unlocked! You can now save your card.");
+            setTimeout(showMenu,3000);
+        } else {
+            say("Unlocked! Pick your goal to see your macro targets:");
+            opts([{label:'Fat Loss',value:'cut'},{label:'Muscle Gain',value:'bulk'},{label:'Maintenance',value:'maintenance'}]);
+            S.step='goal';
+        }
+    } else if(s==='goal'){
+        S.d.goal=val; const c=document.getElementById('main-rz'); drawTDEE(c,val,false);
         c.parentElement.classList.remove('locked');
-        document.getElementById('sbtn-lock').textContent = "Download Result Card";
-        document.getElementById('sbtn-lock').onclick = () => saveCanvasAsImg('main-rz');
-        saveLead(S.d);
-        say("Card unlocked! You can now download it to your device.");
-        setTimeout(() => showMenu(), 2000);
-    } 
-    // ... Implement 1RM and others similarly...
-    else if (step === '1rm_ex') {
-        S.d.exercise = val; S.step = '1rm_weight';
-        inp.inputMode = 'decimal'; say("What weight did you lift (lbs)?");
-    } else if (step === '1rm_weight') {
-        S.d.liftWeight = parseFloat(val); S.step = '1rm_reps';
-        inp.inputMode = 'numeric'; say("How many reps did you complete?");
-    } else if (step === '1rm_reps') {
-        S.d.liftReps = parseInt(val);
-        S.d.oneRM = calc1RM(S.d.liftWeight, S.d.liftReps);
-        
-        const wrap = document.createElement('div');
-        wrap.className = 'rz-wrap';
-        wrap.innerHTML = `<div class="rz locked"><canvas id="rm-rz"></canvas></div><button class="save-btn" id="rm-btn-lock">Enter Email to Unlock</button>`;
-        chat.appendChild(wrap);
-        draw1RM(document.getElementById('rm-rz'), true);
-        scroll();
-        
-        say("Your 1RM profile is ready! Enter your email to unlock the training table and save your card.");
-        S.step = '1rm_email';
-    } else if (step === '1rm_email') {
-        S.d.email = val;
-        const c = document.getElementById('rm-rz');
-        draw1RM(c, false);
-        c.parentElement.classList.remove('locked');
-        document.getElementById('rm-btn-lock').textContent = "Download Result Card";
-        document.getElementById('rm-btn-lock').onclick = () => saveCanvasAsImg('rm-rz');
-        saveLead(S.d);
-        setTimeout(() => showMenu(), 2000);
+        document.getElementById('l-btn').textContent="Download Result Card";
+        document.getElementById('l-btn').onclick=()=>saveCanvasAsImg('main-rz');
+        saveLead(S.d); say("Targets updated. Click the button on the card to save it.");
+        setTimeout(showMenu,3000);
+    } else if(s==='1rm_ex'){ S.d.exercise=val; S.step='1rm_w'; inp.inputMode='decimal'; say("Weight lifted (lbs)?"); }
+    else if(s==='1rm_w'){ S.d.liftW=parseFloat(val); S.step='1rm_r'; inp.inputMode='numeric'; say("Reps?"); }
+    else if(s==='1rm_r'){
+        S.d.liftR=parseInt(val); S.d.oneRM=calc1RM(S.d.liftW, S.d.liftR);
+        addEl(`<div class="rz-wrap"><div class="rz locked"><canvas id="rm-rz"></canvas></div><button class="save-btn" id="rm-btn">Enter Email to Unlock</button></div>`);
+        setTimeout(()=>draw1RM(document.getElementById('rm-rz'),true),100);
+        say("1RM Profile ready. Enter email to unlock the training table:");
+        inp.inputMode='email'; inp.type='email'; S.step='email';
+    } else if(s==='coach'){
+        if(val==='y'){ say("Spots are limited. Fill out the application to set up a free consultation."); addEl(`<a href="https://forms.gle/CBc71KbhJGwZ8TZa9" target="_blank" class="ob" style="display:block;text-decoration:none;margin-top:10px;background:var(--gold)">APPLY FOR CONSULTATION →</a>`); }
+        else { say("No problem! Consistency is key. Let me know when you're ready."); }
+        setTimeout(showMenu,2000);
     }
 }
 
+function showMeal(){
+    const m = calcMacros(S.d.tdee, 'maintenance');
+    say(`Here is a sample daily meal plan for your maintenance targets (<span class="gold">${m.cal} cal</span>):`);
+    addEl(`<div class="meal-card"><div class="meal-title">SAMPLE DAILY PLAN</div>
+        <div class="meal-row"><div class="meal-name">Breakfast: Egg Whites & Oats</div><div class="meal-cal">450 kcal</div></div>
+        <div class="meal-row"><div class="meal-name">Lunch: Chicken, Rice & Broccoli</div><div class="meal-cal">650 kcal</div></div>
+        <div class="meal-row"><div class="meal-name">Dinner: Salmon & Sweet Potato</div><div class="meal-cal">700 kcal</div></div>
+        <div class="meal-row"><div class="meal-name">Snack: Greek Yogurt & Nuts</div><div class="meal-cal">250 kcal</div></div>
+    </div>`);
+    setTimeout(showMenu,2000);
+}
+
+function showProg(){
+    say(`Based on your stats, here is a 12-week weight loss projection:`);
+    addEl(`<div class="stat-card">
+        <div class="prog-row"><div class="d">Week 4</div><div class="w">${(S.d.weight-4).toFixed(1)} lbs</div><div class="c">-4 lbs</div></div>
+        <div class="prog-row"><div class="d">Week 8</div><div class="w">${(S.d.weight-8).toFixed(1)} lbs</div><div class="c">-8 lbs</div></div>
+        <div class="prog-row"><div class="d">Week 12</div><div class="w">${(S.d.weight-12).toFixed(1)} lbs</div><div class="c">-12 lbs</div></div>
+    </div>`);
+    setTimeout(showMenu,2000);
+}
+
 // ─── Interaction ───
-function submit() {
-    const v = inp.value.trim();
-    if (!v) return;
-    say(v, 'usr');
-    inp.value = '';
-    route(v);
-}
-sbtn.onclick = submit;
-inp.onkeypress = (e) => { if (e.key === 'Enter') submit(); };
+const submit = () => { const v=inp.value.trim(); if(!v)return; say(v,'usr'); inp.value=''; route(v); };
+sbtn.onclick = submit; inp.onkeypress = e => { if(e.key==='Enter') submit(); };
+closeBtn.onclick = () => parent.postMessage('close_btf','*');
 
-// Handle iOS height sensing
-if (window.visualViewport) {
-    window.visualViewport.onresize = () => {
-        document.body.style.height = window.visualViewport.height + 'px';
-        scroll();
-    };
-}
+if(window.visualViewport) window.visualViewport.onresize = () => { document.body.style.height = window.visualViewport.height + 'px'; scroll(); };
 
-window.onload = () => {
-    say("Hey! Welcome to Better Tomorrow Fitness. I'm your AI guide.");
-    setTimeout(() => route(), 500);
-};
+window.onload = () => { say("Hey! Welcome to Better Tomorrow Fitness. How can I help today?"); setTimeout(()=>route(),500); };
 </script>
 </body>
 </html>
